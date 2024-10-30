@@ -45,6 +45,7 @@ app.get('/user',async(req,res)=>{
 
         const user = await userSchema.find();
         res.status(200).send(user)
+        res.status(200).json(product);
         
     } catch (error) {
         console.log(error)
