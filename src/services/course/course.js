@@ -46,7 +46,7 @@ router.patch('/course/:id', async (req, res) => {
         if (!id) return res.status(400).send('Bad request');
 
         const updatedCourse = await courseSchema.findByIdAndUpdate(id, req.body, {
-            new: true, // Return the updated document
+            new: true, // Return the updated
             runValidators: true // Run schema validations
         });
 
