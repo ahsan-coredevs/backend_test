@@ -60,10 +60,15 @@ router.delete('/blog/:id', async (req, res) => {
     try {
         const id = req.params.id;
         if (!id) return res.status(400).send('Bad request');
+        const ids= JSON.parse(id);
+  
 
-        const deletedBlog = await blogSchema.findByIdAndDelete(id);
+ 
+       
 
-        if (!deletedBlog) return res.status(404).send({ message: 'User not found.' });
+        const deleteblog = await blogSchema.deleteMany({_id: {$in: ids}});
+
+        if (!deleteblog) return res.status(404).send({ message: 'User not found.' });
 
         res.status(200).send({ message: 'blog deleted successfully.' });
     } catch (error) {
@@ -71,6 +76,10 @@ router.delete('/blog/:id', async (req, res) => {
         res.status(500).send({ message: 'Something went wrong.' });
     }
 });
+
+
+
+module.exports= router;
 
 
 
