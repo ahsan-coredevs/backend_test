@@ -55,7 +55,7 @@ module.exports.loginUser = async (req, res) => {
     const token = jwt.sign({_id: user._id.toString()},process.env.COOKIE_SECRET);
     res.cookie(process.env.COOKIE_SECRET,token, {
         httpOnly: true,
-        // expires: new Date(Date.now()+172800000 )
+ 
     })
 
 
