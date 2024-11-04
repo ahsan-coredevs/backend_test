@@ -24,7 +24,7 @@ module.exports.createUser = async (req, res) => {
     return res.status(201).send(user);
   } catch (error) {
     console.log(error);
-    res.status(500).send({ message: "Something went wrong." });
+    res.status(500).send({ message: "Something went wrong."});
   }
 };
 
@@ -45,7 +45,7 @@ module.exports.loginUser = async (req, res) => {
     if(!email || !password) return res.status(400).send({message:'Bad request'});
     
 
-    //finding user witl email in database
+    //finding user with email in database
     let user = await userSchema.findOne({ email });
     if (!user) return res.status(404).send("No user exist with this email");
 
@@ -55,15 +55,11 @@ module.exports.loginUser = async (req, res) => {
     const token = jwt.sign({_id: user._id.toString()},process.env.COOKIE_SECRET);
     res.cookie(process.env.COOKIE_SECRET,token, {
         httpOnly: true,
- 
+        secure: false,
+        maxAge: 3600000
     })
 
-
     res.status(200).send({data: user})
-
-
-
-
 
   } catch (err) {
     console.log(err);

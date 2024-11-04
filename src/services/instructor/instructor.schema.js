@@ -2,11 +2,11 @@ const {Schema, model } = require("mongoose");
 
 const schema = new Schema(
     {
-        imageUrl : {type: String, require: true},
-        title : {type: String, require: true},
-        label : {type:String, require: true},
-        price : {type:Number},
+        photo : {type: String},
+        name : {type: String, require: true},
+        designation : {type:String, require: true},
         details : {type:String, require: true},
+        skill : [{type:String}],
         nid : { type: String },
         avatar: { type: String },
     },
@@ -18,4 +18,4 @@ schema.methods.toJSON = function () {
     return JSON.parse(JSON.stringify(obj));
   };
 
-module.exports = model("course", schema);
+module.exports = model("instructor", schema);

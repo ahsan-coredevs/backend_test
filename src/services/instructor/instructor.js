@@ -2,31 +2,28 @@
 const express = require('express');
 const router = express.Router();
 
-
-const { createCourse, getAllCourse, deleteMultipleItem } = require('./course.entity');
-const courseSchema = require('./course.schema');
+const instructorSchema = require('./instructor.schema');
+const { createInstructor, getAllInsturctor } = require('./instructor.entity');
 
 
 //create course
-router.post('/course',createCourse);
+router.post('/instructor',createInstructor);
 
 //get all courses
-router.get('/course',getAllCourse);
-
-//delete multiple course
+router.get('/instructor',getAllInsturctor);
 
 
 
 //get sigle entity
-router.get('/course/:id',async(req,res)=>{
+router.get('/instructor/:id',async(req,res)=>{
 
     try {
       
         const id= req.params.id;
         if(!id) return res.status(400).send('Bad request');
 
-        const course = await courseSchema.findOne({_id: id});
-        res.status(200).send(course)
+        const instructor = await instructorSchema.findOne({_id: id});
+        res.status(200).send(instructor)
         
     } catch (error) {
         console.log(error)
@@ -40,19 +37,19 @@ router.get('/course/:id',async(req,res)=>{
 
 
 //update sigle entity
-router.patch('/course/:id', async (req, res) => {
+router.patch('/instructor/:id', async (req, res) => {
     try {
         const id = req.params.id;
         if (!id) return res.status(400).send('Bad request');
 
-        const updatedCourse = await courseSchema.findByIdAndUpdate(id, req.body, {
+        const updatedInstructorData = await instr.findByIdAndUpdate(id, req.body, {
             new: true, // Return the updated
             runValidators: true // Run schema validations
         });
 
-        if (!updatedCourse) return res.status(404).send({ message: 'User not found.' });
+        if (!updatedInstructorData) return res.status(404).send({ message: 'User not found.' });
 
-        res.status(200).send(updatedCourse);
+        res.status(200).send(updatedInstructorData);
     } catch (error) {
         console.log(error);
         res.status(500).send({ message: 'Something went wrong.' });
@@ -60,17 +57,19 @@ router.patch('/course/:id', async (req, res) => {
 });
 
 
-router.delete('/course/:id', async (req, res) => {
+//delete sigle entity
+router.delete('/instructor/:id', async (req, res) => {
     try {
         const id = req.params.id;
+        console.log("Instructor id", id);
         if (!id) return res.status(400).send('Bad request');
         const ids= JSON.parse(id);
   
-        const deletedcourse = await courseSchema.deleteMany({_id: {$in: ids}});
+        const deletedInstructorData = await instructorSchema.deleteMany({_id: {$in: ids}});
 
-        if (!deletedcourse) return res.status(404).send({ message: 'User not found.' });
+        if (!deletedInstructorData) return res.status(404).send({ message: 'User not found.' });
 
-        res.status(200).send({ message: 'course deleted successfully.' });
+        res.status(200).send({ message: 'Instructor Data deleted successfully.' });
     } catch (error) {
         console.log(error);
         res.status(500).send({ message: 'Something went wrong.' });
