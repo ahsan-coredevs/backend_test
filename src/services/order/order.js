@@ -56,7 +56,7 @@ router.patch('/order/:id', async (req, res) => {
 
 
 //delete sigle entity
-router.delete('/insturctor/:id', async (req, res) => {
+router.delete('/order/:id', async (req, res) => {
     try {
         const id = req.params.id;
         if (!id) return res.status(400).send('Bad request');

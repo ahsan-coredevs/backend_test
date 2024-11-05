@@ -18,4 +18,4 @@ schema.methods.toJSON = function () {
     return JSON.parse(JSON.stringify(obj));
   };
 
-module.exports = model("course", schema);
+module.exports = model("Course", schema);
