@@ -52,17 +52,27 @@ module.exports.loginUser = async (req, res) => {
     //validating password
     const isPasswordValid = await decryptPassword(password, user.password);
     if(!isPasswordValid) res.status(400).send({message:'Wrong password'});
-    const token = jwt.sign({_id: user._id.toString()},process.env.COOKIE_SECRET);
-    res.cookie(process.env.COOKIE_SECRET,token, {
-        httpOnly: true,
-        secure: false,
-        maxAge: 3600000
-    })
+    const token = jwt.sign({_id: user._id.toString(), expTime: new Date(Date.now()+172800000).toISOString()},process.env.COOKIE_SECRET);
 
-    res.status(200).send({data: user})
+    res.status(200).send({data: {user, token}})
 
   } catch (err) {
     console.log(err);
     res.status(500).send("Something went wrong");
   }
 };
+
+
+
+
+
+
+module.exports.me = async (req, res) => {
+  try {
+  return res.status(200).send(req.user);
+  } catch (err) {
+    res.status(500).send({ success: false, message: "Something went wrong" });
+  }
+};
+
+

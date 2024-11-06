@@ -1,15 +1,18 @@
 
 const express = require('express');
-const { createUser, getAllUsers, loginUser } = require('./user.entity');
+const { createUser, getAllUsers, loginUser, verifyUser, me } = require('./user.entity');
 const router = express.Router();
 
 const userSchema = require('./user.schema');
+const { auth } = require('../middleware');
 //create user
 router.post('/user',createUser);
 router.post('/user/login', loginUser);
 
+
 //get all user
 router.get('/user',getAllUsers);
+router.get('/me',auth,me);
 
 
 //get sigle entity
