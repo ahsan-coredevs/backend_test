@@ -54,7 +54,7 @@ module.exports.loginUser = async (req, res) => {
     if(!isPasswordValid) res.status(400).send({message:'Wrong password'});
     const token = jwt.sign({_id: user._id.toString(), expTime: new Date(Date.now()+172800000).toISOString()},process.env.COOKIE_SECRET);
 
-    res.status(200).send({data: {user, token}})
+    res.status(200).send({data: {user, token}});
 
   } catch (err) {
     console.log(err);
