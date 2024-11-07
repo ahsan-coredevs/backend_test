@@ -16,8 +16,8 @@ module.exports.createOrder = async (req, res) => {
 
 module.exports.getAllOrder = async (req, res) => {
   try {
-    const ordedrs= await orderSchema.paginate({
-     
+    const orders= await orderSchema.paginate({
+      
     },{
       
       populate:{path:'user course', select:'-password'},
@@ -26,7 +26,7 @@ module.exports.getAllOrder = async (req, res) => {
      
     })
 
-    return res.status(200).send(ordedrs);
+    return res.status(200).send(orders);
    
   } catch (error) {
     console.log(error);

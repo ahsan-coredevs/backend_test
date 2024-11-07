@@ -12,7 +12,6 @@ router.post('/blog',createBlog);
 router.get('/blog',getAllBlogs);
 
 
-//get sigle entity
 router.get('/blog/:id',async(req,res)=>{
 
     try {
@@ -55,7 +54,6 @@ router.put('/blog/:id', async (req, res) => {
 });
 
 
-//delete sigle entity
 router.delete('/blog/:id', async (req, res) => {
     try {
         const id = req.params.id;

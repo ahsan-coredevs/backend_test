@@ -30,11 +30,20 @@ module.exports.createUser = async (req, res) => {
 
 module.exports.getAllUsers = async (req, res) => {
   try {
-    const user = await userSchema.find();
-    res.status(200).send(user);
+    const user= await userSchema.paginate({
+      
+    },{
+      
+      limit:req.query.limit,
+      page:req.query.page
+     
+    })
+
+    return res.status(200).send(user);
+   
   } catch (error) {
     console.log(error);
-    res.status(500).send({ message: "Something went wrong." });
+    res.status(500).send({ message: "Something went wrong" });
   }
 };
 

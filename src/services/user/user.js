@@ -58,13 +58,13 @@ router.put('/user/:id', async (req, res) => {
 });
 
 
-//delete sigle entity
 router.delete('/user/:id', async (req, res) => {
     try {
         const id = req.params.id;
         if (!id) return res.status(400).send('Bad request');
+        const ids = JSON.parse(id);
 
-        const deletedUser = await userSchema.findByIdAndDelete(id);
+        const deletedUser = await userSchema.deleteMany({_id:{$in:ids}});
 
         if (!deletedUser) return res.status(404).send({ message: 'User not found.' });
 

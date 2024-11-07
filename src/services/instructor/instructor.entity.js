@@ -14,8 +14,16 @@ module.exports.createInstructor = async (req, res) => {
 
 module.exports.getAllInsturctor = async (req, res) => {
   try {
-    const course = await instructorSchema.find();
-    res.status(200).send(course);
+    const instructor = await instructorSchema.paginate({
+
+    },{
+  
+      limit : req.query.limit,
+      page : req.query.page
+    })
+
+    return res.status(200).send(instructor);
+
   } catch (error) {
     console.log(error);
     res.status(500).send({ message: "Something went wrong" });

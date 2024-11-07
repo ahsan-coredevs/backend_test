@@ -14,8 +14,22 @@ module.exports.createCourse = async (req, res) => {
 
 module.exports.getAllCourse = async (req, res) => {
   try {
-    const course = await courseSchema.find();
-    res.status(200).send(course);
+    if(!req.query.paginate || !['true','false'].includes(req.query.paginate)) return res.status(400).send('Bad request');
+
+    
+   if (req.query.paginate === 'true') {
+      const course = await courseSchema.paginate({},
+              {
+                  limit : req.query.limit || 10,
+                  page : req.query.page || 1, 
+              });
+              return res.status(200).send(course);
+          }
+          else {
+             const course = await courseSchema.find();
+             return res.status(200).send(course);
+          }
+   
   } catch (error) {
     console.log(error);
     res.status(500).send({ message: "Something went wrong" });

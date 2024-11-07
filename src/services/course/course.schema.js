@@ -1,4 +1,5 @@
 const {Schema, model } = require("mongoose");
+const  paginate  = require("mongoose-paginate-v2");
 
 const schema = new Schema(
     {
@@ -12,6 +13,8 @@ const schema = new Schema(
     },
     { timestamps: true, versionKey: false }
 );
+
+schema.plugin(paginate);
 
 schema.methods.toJSON = function () {
     const obj = this.toObject();

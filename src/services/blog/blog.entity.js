@@ -17,13 +17,19 @@ module.exports.createBlog=async(req,res)=>{
 }
 
 
-module.exports.getAllBlogs=async(req,res)=>{
+module.exports.getAllBlogs = async(req,res)=>{
     try {
+        const blog= await blogSchema.paginate({
+          
+        },{
+          
+          limit:req.query.limit,
+          page:req.query.page
+         
+        })
+    
+        return res.status(200).send(blog);
 
-        const blog = await blogSchema.find();
-        res.status(200).send(blog)
-       
-        
     } catch (error) {
         console.log(error)
         res.status(500).send({message:'Something went wrong.'})
