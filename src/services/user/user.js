@@ -75,7 +75,34 @@ router.delete('/user/:id', async (req, res) => {
     }
 });
 
+// Check if an email exists
+router.get('/user/send-otp', async (req, res) => {
+    try {
+      const { email } = req.query.email;
+  
+      if (!email) return res.status(400).send({ message: 'Bad Request.' });
+  
+      const user = await userSchema.findOne({ email });
+  
+      if (!user) {
+        return res.status(404).send({ exists: true, message: 'No User exist with this email.' });
+      } 
+      //send otp
+      const otp = Math.floor(1000 + Math.random() * 9000 );
 
+      const token = jwt.sign({email: email.toString(), otp: otp, expTime: new Date(Date.now()+300000).toISOString()}, process.env.fun);
+
+      res.status(200).send({data : {otp, token}})
+
+
+
+
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({ message: 'Something went wrong' });
+    }
+  });
+  
 
 
 
