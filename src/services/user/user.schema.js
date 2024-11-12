@@ -6,6 +6,7 @@ const schema = new Schema(
     name: { type: String, required: true },
     email: { type: String, required: true },
     password: { type: String, required: true },
+    lastOtpRequest: Date,
     nid: { type: String },
     avatar: { type: String },
   },
