@@ -33,11 +33,7 @@ router.get('/course/:id',async(req,res)=>{
         res.status(500).send({message:'Something went wrong.'})
         
     }
-    
-   
 })
-
-
 
 //update sigle entity
 router.patch('/course/:id', async (req, res) => {

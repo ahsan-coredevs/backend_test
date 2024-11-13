@@ -5,19 +5,20 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const userSchema = require('./user.schema');
 const { auth } = require('../middleware');
+const bcrypt = require("bcrypt");
+const generateOtpTamplate = require('../../utils/templates/optTemplate');
 
 // Create user
 router.post('/user', createUser);
 router.post('/user/login', loginUser);
 
-// Get all users
+
 router.get('/user', getAllUsers);
 router.get('/me', auth, me); 
 
-router.get('/user/otpsend', async (req, res) => {
+router.post('/user/otpsend', async (req, res) => {
   try {
     const { email } = req.query;
-    console.log("printemail", email);
 
     if (!email) return res.status(400).send({ message: 'Bad Request.' });
 
@@ -58,40 +59,40 @@ router.get('/user/otpsend', async (req, res) => {
         pass: process.env.EMAIL_PASS 
       }
     });
-
+     const otpTamplate = generateOtpTamplate(otp);
     // Email options
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
       subject: '4 Digit OTP Code',
-      text: `Your OTP is ${otp}. Please do not share it with anyone.` // Include OTP as text
+      html: otpTamplate 
     };
 
     // Send the email and wait for the result
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
-        console.error("Error while sending email:", error);
         return res.status(500).send({ message: 'Error while sending email', error });
       } else {
-        console.log('Email sent:', info.response);
         return res.status(200).send({ message: 'Email sent successfully', data: { otp, token } });
       }
     });
   } catch (error) {
-    console.error("Error:", error);
     res.status(500).send({ message: 'Something went wrong', error });
   }
 });
 
-router.get('/user/verifyotp', async(req,res) => {
+router.post('/user/verifyotp', async(req,res) => {
     try {
         const {otp, token} = req.query;
+        if (!otp && !token) return res.status(400).send({ message: 'Bad Request.' });
+
+       
         const decryptedData =  jwt.verify(token, process.env.COOKIE_NAME);
-        console.log(decryptedData.token);
-        if (decryptedData.otp === otp) {
-            return res.status(200).send("Verfication Completed");
+        const tokenOtp = decryptedData.otp;
+        if (otp.toString() === tokenOtp.toString()) {
+            return res.status(200).send({message: "Verification completed"});
         } else {
-            return res.status(500).send({message: "OTP does not matched"});
+            return res.status(500).send({message: "Wrong OTP, Try Again"});
         }
 
     } catch (error) {
@@ -99,9 +100,37 @@ router.get('/user/verifyotp', async(req,res) => {
     }
 })
 
+
+router.patch("/user/updatepassword", async (req, res) => {
+  try {
+    const { password, token } = req.body;
+  
+    const decryptedData = jwt.verify(token, process.env.COOKIE_NAME);
+    const email = decryptedData.email;
+
+    // Find the user by email
+    const user = await userSchema.findOne({ email: email });
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    // Hash the new password using bcrypt
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Update the user's password
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).send({ message: "Password updated successfully"});
+  } catch (error) {
+    res.status(500).send({ message: "Something went wrong" });
+  }
+});
+
 //get sigle entity
 router.get('/user/:id',async(req,res)=>{
-
+       
     try {
       
         const id= req.params.id;
@@ -111,7 +140,6 @@ router.get('/user/:id',async(req,res)=>{
         res.status(200).send(user)
         
     } catch (error) {
-        console.log(error)
         res.status(500).send({message:'Something went wrong.'})
         
     }
@@ -136,7 +164,7 @@ router.put('/user/:id', async (req, res) => {
 
         res.status(200).send(updatedUser);
     } catch (error) {
-        console.log(error);
+      
         res.status(500).send({ message: 'Something went wrong.' });
     }
 });
@@ -154,7 +182,6 @@ router.delete('/user/:id', async (req, res) => {
 
         res.status(200).send({ message: 'User deleted successfully.' });
     } catch (error) {
-        console.log(error);
         res.status(500).send({ message: 'Something went wrong.' });
     }
 });
