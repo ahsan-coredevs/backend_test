@@ -2,13 +2,13 @@ const express = require('express');
 const { createUser, getAllUsers, loginUser, verifyUser, me } = require('./user.entity');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
 const userSchema = require('./user.schema');
 const { auth } = require('../middleware');
 const bcrypt = require("bcrypt");
 const generateOtpTamplate = require('../../utils/templates/optTemplate');
+const sendMail = require('../../controller/email/email');
 
-// Create user
+//create user
 router.post('/user', createUser);
 router.post('/user/login', loginUser);
 
@@ -20,56 +20,44 @@ router.post('/user/otpsend', async (req, res) => {
   try {
     const { email } = req.query;
 
-    if (!email) return res.status(400).send({ message: 'Bad Request.' });
+    if (!email) return res.status(400).send({message: 'Bad Request.'});
 
-    // Find the user in the database
     const user = await userSchema.findOne({ email });
     console.log("User details", user);
     if (!user) {
       return res.status(404).send({ exists: false, message: 'No user exists with this email.' });
     }
 
-    // Check if the last OTP request was within the last 5 minutes
-    const currentTime = Date.now();
-    const fiveMinutes = 5 * 60 * 1000; // 5 minutes in milliseconds
-    if (user.lastOtpRequest && currentTime - user.lastOtpRequest < fiveMinutes) {
-      return res.status(429).send({ message: 'Please wait 5 minutes before requesting a new OTP.' });
-    }
+    // // Check if the last OTP request was within the last 5 minutes
+    // const currentTime = Date.now();
+    // const fiveMinutes = 2 * 60 * 1000;
+    // if (user.lastOtpRequest && currentTime - user.lastOtpRequest < fiveMinutes) {
+    //   return res.status(429).send({ message: 'Please wait 5 minutes before requesting a new OTP.' });
+    // }
 
-    // Generate a 4-digit OTP 
+   
     const otp = Math.floor(1000 + Math.random() * 9000);
     console.log("4-digit OTP:", otp);
 
-    // Generate a JWT token
+  
     const token = jwt.sign(
       { email: email.toString(), otp: otp, expTime: new Date(Date.now() + 300000).toISOString() },
-      process.env.COOKIE_NAME // Ensure this is set correctly
+      process.env.COOKIE_NAME
     );
     console.log("Token:", token);
 
-    // Update the lastOtpRequest timestamp in the database
-    user.lastOtpRequest = currentTime;
-    await user.save();
+    // user.lastOtpRequest = currentTime;
+    // await user.save();
 
-    // Set up nodemailer transporter
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS 
-      }
-    });
-     const otpTamplate = generateOtpTamplate(otp);
-    // Email options
+    const otpTemplate = generateOtpTamplate(otp, token);
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
       subject: '4 Digit OTP Code',
-      html: otpTamplate 
+      html: otpTemplate 
     };
 
-    // Send the email and wait for the result
-    transporter.sendMail(mailOptions, (error, info) => {
+    sendMail(mailOptions, (error, info) => {
       if (error) {
         return res.status(500).send({ message: 'Error while sending email', error });
       } else {
@@ -80,6 +68,7 @@ router.post('/user/otpsend', async (req, res) => {
     res.status(500).send({ message: 'Something went wrong', error });
   }
 });
+
 
 router.post('/user/verifyotp', async(req,res) => {
     try {
