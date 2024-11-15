@@ -3,7 +3,6 @@ const courseSchema = require("./course.schema");
 module.exports.createCourse = async (req, res) => {
   try {
     console.log(req.body);
-
     const course = await courseSchema.create(req.body);
     res.status(200).send(course);
   } catch (error) {
