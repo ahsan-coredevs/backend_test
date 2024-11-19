@@ -17,17 +17,13 @@ module.exports.createOrder = async (req, res) => {
 module.exports.getAllOrder = async (req, res) => {
   try {
     const orders= await orderSchema.paginate({
-      
     },{
-      
       populate:{path:'user course', select:'-password'},
       limit:req.query.limit,
       page:req.query.page
-     
     })
-
+    
     return res.status(200).send(orders);
-   
   } catch (error) {
     console.log(error);
     res.status(500).send({ message: "Something went wrong" });

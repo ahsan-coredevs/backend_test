@@ -20,8 +20,10 @@ app.use(morgan('common'));
 app.use(require('./services/user/user'));
 app.use(require('./services/blog/blog'));
 app.use(require('./services/course/course'));
+app.use(require('./services/statsApi/stats'));
 app.use(require('./services/instructor/instructor'));
 app.use(require('./services/order/order'));
+
 
 app.get('/health', async(req, res)=>{
     res.status(200).send('Yo Yo!');
