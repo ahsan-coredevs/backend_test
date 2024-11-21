@@ -23,6 +23,8 @@ app.use(require('./services/course/course'));
 app.use(require('./services/statsApi/stats'));
 app.use(require('./services/instructor/instructor'));
 app.use(require('./services/order/order'));
+app.use(require('./services/subscribers/subscribers'));
+app.use(require('./services/newsletters/newsletters'));
 
 
 app.get('/health', async(req, res)=>{
